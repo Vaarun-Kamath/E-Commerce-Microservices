@@ -14,6 +14,9 @@ spec:
     spec:
       containers:
         - name: store-server
-          image: varunkamathcs594/store-server
+          image: [DOCKER_ID]/store-server-593-594-606-607
           ports:
             - containerPort: 8000
+          env:
+            - name: PORT
+              value: "8000"

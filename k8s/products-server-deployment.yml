@@ -14,6 +14,9 @@ spec:
     spec:
       containers:
         - name: products-server
-          image: varunkamathcs594/products-server
+          image: [DOCKER_ID]/products-server-593-594-606-607
           ports:
             - containerPort: 8002
+          env:
+            - name: PORT
+              value: "8002"

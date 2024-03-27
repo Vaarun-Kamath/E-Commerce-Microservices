@@ -16,6 +16,8 @@ services:
     build:
       dockerfile: Dockerfile.dev
       context: ./server/store
+    env_file:
+      - ./server/store/.env
     volumes:
       - /app/node_modules
       - ./server/store:/app
@@ -24,6 +26,8 @@ services:
     build:
       dockerfile: Dockerfile.dev
       context: ./server/customer
+    env_file:
+      - ./server/customer/.env
     volumes:
       - /app/node_modules
       - ./server/customer:/app
@@ -32,6 +36,8 @@ services:
     build:
       dockerfile: Dockerfile.dev
       context: ./server/products
+    env_file:
+      - ./server/products/.env
     volumes:
       - /app/node_modules
       - ./server/products:/app

@@ -2,9 +2,13 @@
 
 const cors = require("cors");
 const express = require("express");
+const dotenv = require("dotenv");
+
+dotenv.config({ path: "./.env" });
+
 const app = express();
 
-const PORT = 8002;
+const PORT = process.env.PORT;
 
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true, limit: "1mb" }));
