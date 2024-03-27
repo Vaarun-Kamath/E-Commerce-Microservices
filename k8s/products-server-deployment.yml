@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: products-server-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: products-server
+  template:
+    metadata:
+      labels:
+        component: products-server
+    spec:
+      containers:
+        - name: products-server
+          image: varunkamathcs594/products-server
+          ports:
+            - containerPort: 8002

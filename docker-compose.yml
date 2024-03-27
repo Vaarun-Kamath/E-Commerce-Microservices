@@ -1,0 +1,37 @@
+version: "3"
+services:
+  nginx:
+    depends_on:
+      - store
+      - customer
+      - products
+    restart: always
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./nginx
+    ports:
+      - "3050:80"
+
+  store:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./server/store
+    volumes:
+      - /app/node_modules
+      - ./server/store:/app
+
+  customer:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./server/customer
+    volumes:
+      - /app/node_modules
+      - ./server/customer:/app
+
+  products:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./server/products
+    volumes:
+      - /app/node_modules
+      - ./server/products:/app

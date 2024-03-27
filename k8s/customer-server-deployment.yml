@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: customer-server-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: customer-server
+  template:
+    metadata:
+      labels:
+        component: customer-server
+    spec:
+      containers:
+        - name: customer-server
+          image: varunkamathcs594/customer-server
+          ports:
+            - containerPort: 8001
