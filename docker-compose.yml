@@ -12,6 +12,16 @@ services:
     ports:
       - "3050:80"
 
+  database:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./server/database
+    env_file:
+      - ./server/database/.env
+    volumes:
+      - /app/node_modules
+      - ./server/database:/app
+
   store:
     build:
       dockerfile: Dockerfile.dev
