@@ -1,6 +1,7 @@
 // Simple express server which returns working server on '/'
 
 const cors = require("cors");
+const axios = require("axios");
 const express = require("express");
 const dotenv = require("dotenv");
 
@@ -17,6 +18,23 @@ app.use(express.static(__dirname + "/public"));
 
 app.get("/", (req, res) => {
   res.status(200).json({ message: "Customer Server is working" });
+});
+
+app.get('/sendRequestCustomer', async (req, res) => {
+  try {
+    await axios.get(`${process.env.DB_SERVER}/getCustomers`)
+    .then((response) => {
+      // console.log(response.data);
+      res.status(200).json(response.data);
+    })
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.get("/someCustomers", (req, res) => {
+  res.status(200).json({ message: "Here are some customers" });
 });
 
 app.listen(PORT, () => {

@@ -1,3 +1,4 @@
+const cors = require("cors");
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
@@ -8,6 +9,9 @@ const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(cors());
+app.use(express.json({ limit: "1mb" }));
+app.use(express.urlencoded({ extended: true, limit: "1mb" }));
 
 const mongo_url = process.env.MONGO_URL;
 const PORT = process.env.PORT || 9001;
@@ -32,12 +36,13 @@ const customerSchema = new mongoose.Schema({
 const User = mongoose.model("customers", customerSchema);
 
 app.get("/", (req, res) => {
-  res.send("Hello World");
+  res.send("Hello World??");
 });
 
 app.get("/getCustomers", async (req, res) => {
   const customersData = await User.find({});
-  res.status(200).json(customersData);
+  // console.log("Database stuff: "+customersData);
+  res.status(200).json({msg: customersData});
 });
 
 app.post("/addCustomer", async (req, res) => {
