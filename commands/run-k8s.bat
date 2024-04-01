@@ -1,6 +1,5 @@
 @echo off
 
-
 echo Make sure you have ingress running, if not run init-nginx.bat
 
 pause
