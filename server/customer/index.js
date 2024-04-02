@@ -22,6 +22,7 @@ app.get('/', (req, res) => {
 
 app.post('/login', (req, res) => {
   console.log('Login Request recieved');
+  console.log(req.body);
   return res.status(200).json({
     status: 200,
     successCode: 'Success',
