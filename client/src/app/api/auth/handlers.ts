@@ -8,8 +8,8 @@ export async function userLoginHandler(
 ) {
   try {
     const response = await axiosInstance.post(
-      // `${BACKEND_URL}/api/customer/login`,
-      `http://localhost:8001/login`,
+      `${BACKEND_URL}/api/customer/login`,
+      // `http://localhost:8001/login`,
       credentials
     );
     const { data } = response;

@@ -20,18 +20,46 @@ app.get('/', (req, res) => {
   res.status(200).json({ message: 'Customer Server is working' });
 });
 
-app.post('/login', (req, res) => {
-  console.log('Login Request recieved');
-  console.log(req.body);
-  return res.status(200).json({
-    status: 200,
-    successCode: 'Success',
-    content: {
-      user_id: 232,
-      email: 'varun@gmail.com',
-      username: 'varunk',
-    },
-  });
+// app.post('/login', (req, res) => {
+//   console.log('Login Request recieved');
+//   console.log(req.body);
+//   return res.status(200).json({
+//     status: 200,
+//     successCode: 'Success',
+//     content: {
+//       user_id: 232,
+//       email: 'varun@gmail.com',
+//       username: 'varunk',
+//     },
+//   });
+// });
+
+app.post('/login', async (req, res) => {
+  try {
+    await axios
+      .get(`${process.env.DB_SERVER}/checkUser`, {
+        params: {
+          email: req.body.email,
+          password: req.body.password,
+        },
+      })
+      .then((response) => {
+        if (response.status === 401 || response.status === 404) {
+          res.status(response.status).json({
+            status: response.status,
+            successCode: 'Failed',
+            content: response.data.msg});
+        }
+        res.status(200).json({
+          status: 200,
+          successCode: 'Success',
+          content: response.data.msg,
+        });
+      });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 app.get('/sendRequestCustomer', async (req, res) => {
