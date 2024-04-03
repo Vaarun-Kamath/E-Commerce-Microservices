@@ -114,7 +114,9 @@ app.post('/addProduct', async (req, res) => {
 
 app.post('/addToCart', async (req, res) => {
   try {
-    const { user_id, product_id, quantity } = req.body;
+    const { user_id, product_id } = req.body;
+    const quantity = Number(req.body.quantity);
+
     const customerData = await User.findById(user_id);
     if (!customerData) {
       res.status(404).json({ message: 'Customer not found' });
@@ -130,9 +132,10 @@ app.post('/addToCart', async (req, res) => {
       const index = newCart.findIndex((item) => item.product_id === product_id);
       if (quantity === 0) {
         newCart.splice(index, 1);
-      } else newCart[index].quantity = Number(quantity);
+        console.log(newCart);
+      } else newCart[index].quantity = quantity;
     } else {
-      newCart.push({ product_id: product_id, quantity: Number(quantity) });
+      newCart.push({ product_id: product_id, quantity: quantity });
     }
     await User.findByIdAndUpdate(user_id, { cart: newCart });
     res.status(200).json({ message: 'Product added to cart' });
