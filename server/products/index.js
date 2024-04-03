@@ -36,6 +36,26 @@ app.get('/getProducts', async (req, res) => {
   }
 });
 
+app.get('/getProduct', async (req, res) => {
+  try {
+    await axios
+      .get(`${process.env.DB_SERVER}/getProduct`,{
+        params: {
+          id: req.query.id,
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        res
+          .status(response.status)
+          .json({ content: response.data.msg, status: response.status });
+      });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 app.get('/sendRequest', async (req, res) => {
   try {
     await axios

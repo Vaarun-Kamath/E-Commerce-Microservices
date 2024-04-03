@@ -82,6 +82,19 @@ app.get('/getAllProducts', async (req, res) => {
   else res.status(200).json({ msg: productsData });
 });
 
+app.get('/getProduct', async (req, res) => {
+  try {
+    const id = req.query.id.toString();
+    const productsData = await Product.findById(id);
+    if (productsData.length === 0) 
+      res.status(404).json({ msg: 'No products found' });
+    else res.status(200).json({ msg: productsData });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
 app.post('/addProduct', async (req, res) => {
   try {
     console.log(req.body);
