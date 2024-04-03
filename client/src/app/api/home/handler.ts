@@ -1,15 +1,15 @@
-import { isAxiosError } from "axios";
-import axiosInstance from "@/utils/axiosInstance";
+import { isAxiosError } from 'axios';
+import axiosInstance from '@/utils/axiosInstance';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export const getProducts = async () => {
   try {
     const response = await axiosInstance.get(
-      `https://api.escuelajs.co/api/v1/products/`
+      `${BACKEND_URL}/api/products/getProducts`
     );
     const { data } = response;
-    return response;
+    return data;
   } catch (error) {
     if (isAxiosError(error) && error.response) {
       const { status, errorCode, errorMessage } = error.response.data;
@@ -18,8 +18,8 @@ export const getProducts = async () => {
       console.error(error);
       return {
         status: 500,
-        errorCode: "PRODUCTS_GET_API_CALL_ERROR",
-        errorMessage: "Please try again later.",
+        errorCode: 'PRODUCTS_GET_API_CALL_ERROR',
+        errorMessage: 'Please try again later.',
       };
     }
   }

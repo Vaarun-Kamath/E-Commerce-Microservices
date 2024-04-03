@@ -1,32 +1,48 @@
 // Simple express server which returns working server on '/'
 
-const cors = require("cors");
-const axios = require("axios");
-const express = require("express");
-const dotenv = require("dotenv");
+const cors = require('cors');
+const axios = require('axios');
+const express = require('express');
+const dotenv = require('dotenv');
 
-dotenv.config({ path: "./.env" });
+dotenv.config({ path: './.env' });
 
 const app = express();
 
 const PORT = process.env.PORT;
 
-app.use(express.json({ limit: "1mb" }));
-app.use(express.urlencoded({ extended: true, limit: "1mb" }));
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 app.use(cors());
-app.use(express.static(__dirname + "/public"));
+app.use(express.static(__dirname + '/public'));
 
-app.get("/", (req, res) => {
-  res.status(200).json({ message: "Products Server is working" });
+app.get('/', (req, res) => {
+  res.status(200).json({ message: 'Products Server is working' });
+});
+
+app.get('/getProducts', async (req, res) => {
+  try {
+    await axios
+      .get(`${process.env.DB_SERVER}/getAllProducts`)
+      .then((response) => {
+        console.log(response.data);
+        res
+          .status(response.status)
+          .json({ content: response.data.msg, status: response.status });
+      });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 app.get('/sendRequest', async (req, res) => {
   try {
-    await axios.get(`${process.env.DB_SERVER}/getCustomers`)
-    .then((response) => {
-      // console.log(response.data);
-      res.status(200).json(response.data.msg[0]);
-    })
+    await axios
+      .get(`${process.env.DB_SERVER}/getCustomers`)
+      .then((response) => {
+        res.status(200).json(response.data.msg[0]);
+      });
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ error: 'Internal server error' });

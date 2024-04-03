@@ -1,4 +1,4 @@
-import Sidebar from "@/components/Sidebar";
+import Sidebar from '@/components/Sidebar';
 
 export default async function MainLayout({
   children,
@@ -6,11 +6,9 @@ export default async function MainLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex max-w-screen max-h-screen">
+    <div className='flex max-w-screen'>
       <Sidebar />
-      <div className="overflow-y-auto overflow-x-none w-full mt-16 px-3 py-4">
-        {children}
-      </div>
+      {children}
     </div>
   );
 }

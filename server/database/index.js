@@ -13,6 +13,9 @@ app.use(cors());
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
+const User = require('./model').User;
+const Product = require('./model').Product;
+
 const mongo_url = process.env.MONGO_URL;
 const PORT = process.env.PORT || 9001;
 
@@ -26,19 +29,6 @@ async function connect() {
 }
 
 connect();
-
-const customerSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  username: { type: String, required: true, unique: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-});
-
-const User = mongoose.model('customers', customerSchema);
-
-app.get('/', (req, res) => {
-  res.send('Hello World??');
-});
 
 app.get('/checkUser', async (req, res) => {
   try {
@@ -66,7 +56,6 @@ app.get('/checkUser', async (req, res) => {
 
 app.get('/getCustomers', async (req, res) => {
   const customersData = await User.find({});
-  // console.log("Database stuff: "+customersData);
   res.status(200).json({ msg: customersData });
 });
 
@@ -85,6 +74,13 @@ app.post('/addCustomer', async (req, res) => {
     console.log(err);
     res.status(400).json({ message: 'Error adding customer' });
   }
+});
+
+app.get('/getAllProducts', async (req, res) => {
+  const productsData = await Product.find({});
+  if (productsData.length === 0)
+    res.status(404).json({ msg: 'No products found' });
+  else res.status(200).json({ msg: productsData });
 });
 
 app.listen(PORT, () => {

@@ -88,22 +88,22 @@ export default function LoginForm(props: Props) {
       </div>
 
       <div>
-        <div className='flex items-center justify-between'>
-          <label
-            htmlFor='password'
-            className='block text-sm font-medium leading-6 text-gray-900'
-          >
-            Password
-          </label>
-          <div className='text-sm'>
+        {/* <div className=''> */}
+        <label
+          htmlFor='password'
+          className='text-sm font-medium leading-6 text-gray-900 flex items-center justify-between'
+        >
+          <span>Password</span>
+          <span className='text-sm'>
             <a
               href='#'
               className='font-semibold text-green-600 hover:text-green-500'
             >
               Forgot password?
             </a>
-          </div>
-        </div>
+          </span>
+        </label>
+        {/* </div> */}
         <div className='mt-2'>
           <StyledInput
             className='block w-full rounded-md py-1.5 px-1.5 text-gray-900 border-2 shadow-sm ring-0 ring-gray-300 placeholder:text-gray-400 focus:ring-0 focus:ring-green-600 sm:text-sm sm:leading-6'
