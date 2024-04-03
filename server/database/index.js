@@ -68,7 +68,6 @@ app.post('/addCustomer', async (req, res) => {
       username: username,
       email: email,
     });
-    console.log('newCustomer: ', newCustomer);
     res.status(201).json({ message: 'Customer added successfully' });
   } catch (err) {
     console.log(err);
@@ -81,6 +80,53 @@ app.get('/getAllProducts', async (req, res) => {
   if (productsData.length === 0)
     res.status(404).json({ msg: 'No products found' });
   else res.status(200).json({ msg: productsData });
+});
+
+app.post('/addProduct', async (req, res) => {
+  try {
+    console.log(req.body);
+    const { name, price, quantity, pictureLink } = req.body;
+    const newProduct = await Product.create({
+      name: name,
+      picture: pictureLink,
+      price: price,
+      quantity: quantity,
+    });
+    res.status(201).json({ message: 'Product added successfully' });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: 'Error adding product' });
+  }
+});
+
+app.post('/addToCart', async (req, res) => {
+  try {
+    const { user_id, product_id, quantity } = req.body;
+    const customerData = await User.findById(user_id);
+    if (!customerData) {
+      res.status(404).json({ message: 'Customer not found' });
+      return;
+    }
+    const productStock = await Product.findById(product_id).select('quantity');
+    if (productStock.quantity < quantity) {
+      res.status(400).json({ message: 'Not enough stock' });
+      return;
+    }
+    const newCart = customerData.cart;
+    if (newCart.some((item) => item.product_id === product_id)) {
+      const index = newCart.findIndex((item) => item.product_id === product_id);
+      if (quantity === 0) {
+        newCart.splice(index, 1);
+      } else newCart[index].quantity = Number(quantity);
+    } else {
+      newCart.push({ product_id: product_id, quantity: Number(quantity) });
+    }
+    await User.findByIdAndUpdate(user_id, { cart: newCart });
+    res.status(200).json({ message: 'Product added to cart' });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: 'Error adding product to cart' });
+  }
 });
 
 app.listen(PORT, () => {

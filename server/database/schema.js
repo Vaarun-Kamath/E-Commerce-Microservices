@@ -5,6 +5,7 @@ module.exports.customerSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  cart: { type: Array, required: false },
 });
 
 module.exports.productSchema = new mongoose.Schema({
