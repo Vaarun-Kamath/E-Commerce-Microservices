@@ -38,10 +38,10 @@ app.get('/checkUser', async (req, res) => {
     const password = req.query.password;
     const customerData = await User.find({ email: email });
     if (customerData.length === 0) {
-      res.status(404).json({ msg: 'User not found' });
+      res.status(404).json({ message: 'User not found' });
     } else if (customerData[0].password === password) {
       res.status(200).json({
-        msg: {
+        message: {
           user_id: customerData[0]._id.toString(),
           name: customerData[0].name,
           username: customerData[0].username,
@@ -49,7 +49,7 @@ app.get('/checkUser', async (req, res) => {
         },
       });
     } else {
-      res.status(401).json({ msg: 'Password Incorrect' });
+      res.status(401).json({ message: 'Password Incorrect' });
     }
   } catch (err) {
     console.log(err);
@@ -58,7 +58,7 @@ app.get('/checkUser', async (req, res) => {
 
 app.get('/getCustomers', async (req, res) => {
   const customersData = await User.find({});
-  res.status(200).json({ msg: customersData });
+  res.status(200).json({ message: customersData });
 });
 
 app.post('/addCustomer', async (req, res) => {
@@ -80,8 +80,8 @@ app.post('/addCustomer', async (req, res) => {
 app.get('/getAllProducts', async (req, res) => {
   const productsData = await Product.find({});
   if (productsData.length === 0)
-    res.status(404).json({ msg: 'No products found' });
-  else res.status(200).json({ msg: productsData });
+    res.status(404).json({ message: 'No products found' });
+  else res.status(200).json({ message: productsData });
 });
 
 app.get('/getProduct', async (req, res) => {
@@ -91,8 +91,8 @@ app.get('/getProduct', async (req, res) => {
     // const productsData = await Product.findById(id);
     const productsData = await Product.find({ _id: new ObjectId(id) });
     if (productsData.length === 0)
-      res.status(404).json({ msg: 'No products found' });
-    else res.status(200).json({ msg: productsData });
+      res.status(404).json({ message: 'No products found' });
+    else res.status(200).json({ message: productsData });
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: 'Internal Server Error' });
@@ -116,52 +116,15 @@ app.post('/addProduct', async (req, res) => {
   }
 });
 
-// app.post('/addToCart', async (req, res) => {
-//   try {
-//     const { user_id, product_id } = req.body;
-//     const quantity = Number(req.body.quantity);
-
-//     const customerData = await User.findById(user_id);
-//     if (!customerData) {
-//       res.status(404).json({ message: 'Customer not found' });
-//       return;
-//     }
-//     const productStock = await Product.findById(product_id).select('quantity');
-//     if (productStock.quantity < quantity) {
-//       res.status(400).json({ message: 'Not enough stock' });
-//       return;
-//     }
-//     const newCart = customerData.cart;
-//     if (newCart.some((item) => item.product_id === product_id)) {
-//       const index = newCart.findIndex((item) => item.product_id === product_id);
-//       if (quantity === 0) {
-//         newCart.splice(index, 1);
-//         console.log(newCart);
-//       } else newCart[index].quantity = quantity;
-//     } else {
-//       newCart.push({ product_id: product_id, quantity: quantity });
-//     }
-//     await User.findByIdAndUpdate(user_id, { cart: newCart });
-//     res.status(200).json({ message: 'Product added to cart' });
-//   } catch (err) {
-//     console.log(err);
-//     res.status(400).json({ message: 'Error adding product to cart' });
-//   }
-// });
-
 app.post('/addtocart', async (req, res) => {
   try {
     // const customerId = req.user.user_id;
-    const customerId = req.body.customerId.toString(); //for testing purposes only
-    // '660927aa2a095a0885ad20e7';
+    const customerId = 
+    // req.body.customerId.toString(); //for testing purposes only
+    '660927aa2a095a0885ad20e7';
     const productId = req.body.productId.toString();
     const quantity = Number(req.body.quantity);
     const customerData = await User.findById(customerId);
-    // console.log("Customer data: "+customerData);
-    // if (customerData.length === 0) {
-    //   res.status(404).json({ message: 'Customer not found' });
-    //   return;
-    // }
 
     const productStock = await Product.findById(productId);
     if (productStock.quantity < quantity) {
@@ -183,20 +146,19 @@ app.post('/addtocart', async (req, res) => {
     res.status(200).json({ message: 'Product added to cart' });
   } catch {
     console.log(err);
-    res.status(400).json({ message: 'Error adding product to cart' });
+    res
+      .status(500)
+      .json({ message: 'Error adding product to cart(server error)' });
   }
 });
 
 app.post('/makePayment', async (req, res) => {
   try {
     // const customerId = req.user.user_id;
-    const customerId = req.body.customerId.toString();
+    const customerId = "660927aa2a095a0885ad20e7"
+    // req.body.customerId.toString();
     // const amount = Number(req.body.amount);
     const customerData = await User.findById(customerId);
-    // if (customerData.cart.price !== amount) {
-    //   res.status(400).json({ message: 'Amount mismatch' });
-    //   return;
-    // }
 
     const newCart = customerData['cart'];
     const currentDate = new Date();
@@ -213,12 +175,6 @@ app.post('/makePayment', async (req, res) => {
       product.quantity -= customerData['cart'][itemId];
       await product.save(); // Save the updated product to the database
     });
-
-    // for(let i of customerData['cart']){
-    //   let product = await Product.findById(i);
-    //   product.quantity -= customerData['cart'][i];
-    //   await Product.replaceOne({ _id: new ObjectId(i) }, product);
-    // }
 
     await Store.create({
       customerId: customerId,
@@ -280,7 +236,9 @@ async function getProductsinCart(cart) {
 
 app.get('/getOrders', async (req, res) => {
   try {
-    const customerId = req.body.customerId.toString();
+        // const customerId = req.user.user_id;
+    const customerId = "660927aa2a095a0885ad20e7" 
+    // req.body.customerId.toString();
     const orders = await Store.find(
       { customerId: customerId },
       { amountPaid: 1, date_of_payment: 1, _id: 1 }
@@ -298,25 +256,29 @@ app.get('/getOrders', async (req, res) => {
 
 app.get('/getOrder', async (req, res) => {
   try {
+        // const customerId = req.user.user_id;
+    const customerId = "660927aa2a095a0885ad20e7" 
+    // req.body.customerId.toString();
     const order_id = req.query.order_id.toString();
-    const order = await Store.findById(order_id);
+    const order = await Store.findOne({_id: new ObjectId(order_id), customerId: customerId});
     if (!order) {
       res.status(404).json({ message: 'Order not found' });
       return;
-    } 
+    }
     const result = await getProductsinCart(order['cart']);
-    result.push({ amountPaid: order['amountPaid'] });
+    // result.push({ amountPaid: order['amountPaid'] });
     res.status(200).json({ message: result });
-
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: 'Internal Server Error' });
+    res.status(500).json({ message: 'DB Internal Server Error' });
   }
 });
 
 app.get('/viewCart', async (req, res) => {
   try {
-    const customerId = req.body.customerId.toString();
+        // const customerId = req.user.user_id;
+    const customerId = "660927aa2a095a0885ad20e7" 
+    // req.body.customerId.toString();
     const customerData = await User.findById(customerId);
     if (customerData.length === 0) {
       res.status(404).json({ message: 'Customer not found' });
@@ -324,7 +286,7 @@ app.get('/viewCart', async (req, res) => {
     }
     const orders = await getProductsinCart(customerData['cart']);
     if (orders === 'Error') {
-      res.status(500).json({ message: 'Internal Server Error' });
+      res.status(500).json({ message: 'Internal Server Error in function' });
     } else {
       res.status(200).json({ message: orders });
     }

@@ -48,12 +48,13 @@ app.post('/login', async (req, res) => {
           res.status(response.status).json({
             status: response.status,
             successCode: 'Failed',
-            content: response.data.msg});
+            content: response.data.message,
+          });
         }
         res.status(200).json({
           status: 200,
           successCode: 'Success',
-          content: response.data.msg,
+          content: response.data.message,
         });
       });
   } catch (error) {

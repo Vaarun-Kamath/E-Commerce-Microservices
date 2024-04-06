@@ -4,6 +4,7 @@ const cors = require('cors');
 const axios = require('axios');
 const express = require('express');
 const dotenv = require('dotenv');
+const { stat } = require('fs');
 
 dotenv.config({ path: './.env' });
 
@@ -28,7 +29,7 @@ app.get('/getProducts', async (req, res) => {
         console.log(response.data);
         res
           .status(response.status)
-          .json({ content: response.data.msg, status: response.status });
+          .json({ content: response.data.message, status: response.status });
       });
   } catch (error) {
     console.error('Error:', error);
@@ -39,7 +40,7 @@ app.get('/getProducts', async (req, res) => {
 app.get('/getProduct', async (req, res) => {
   try {
     await axios
-      .get(`${process.env.DB_SERVER}/getProduct`,{
+      .get(`${process.env.DB_SERVER}/getProduct`, {
         params: {
           id: req.query.id,
         },
@@ -48,11 +49,44 @@ app.get('/getProduct', async (req, res) => {
         console.log(response.data);
         res
           .status(response.status)
-          .json({ content: response.data.msg, status: response.status });
+          .json({ content: response.data.message, status: response.status });
       });
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/addtocart', async (req, res) => {
+  const reqbody = req.body;
+  // const response = await axios.post(`${process.env.DB_SERVER}/addtocart`, reqbody);
+  // res.status(response.status).json({content: response.data.message, status: response.status});
+  await axios
+    .post(`${process.env.DB_SERVER}/addtocart`, reqbody)
+    .then((response) => {
+      res
+        .status(response.status)
+        .json({ content: response.data.message, status: response.status });
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+      res.status(500).json({ content: 'Internal server error', status: 500 });
+    });
+});
+
+app.get('/viewCart', async (req, res) => {
+  try {
+    await axios
+      .get(`${process.env.DB_SERVER}/viewCart`)
+      .then((response) => {
+        res.status(response.status).json({
+          content: response.data.message,
+          status: response.status,
+        });
+      });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Why Internal server error' });
   }
 });
 
@@ -61,7 +95,7 @@ app.get('/sendRequest', async (req, res) => {
     await axios
       .get(`${process.env.DB_SERVER}/getCustomers`)
       .then((response) => {
-        res.status(200).json(response.data.msg[0]);
+        res.status(200).json(response.data.message[0]);
       });
   } catch (error) {
     console.error('Error:', error);
