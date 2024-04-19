@@ -207,6 +207,51 @@ app.delete('/removeFromCart', async (req, res) => {
   }
 });
 
+app.patch('/setItemQuantity', async (req, res) => {
+  try {
+    console.log('req.Body: ', {
+      ...req.body,
+      user: req.body.user,
+    });
+    const customerId = req.body.user.user_id;
+    const productId = req.body.productId.toString();
+
+    const customer = await User.findById(customerId);
+    if (!customer) {
+      res.status(404).json({ message: 'Customer not found' });
+      return;
+    }
+    if (!customer.cart[productId]) {
+      res.status(404).json({ message: 'Product not found in cart' });
+      return;
+    }
+    const product = await Product.findById(productId);
+    if (req.body.quantity > product.quantity) {
+      res.status(400).json({ message: 'Not enough stock' });
+      return;
+    }
+    const newPrice =
+      customer.cart.price -
+      product.price * customer.cart[productId] +
+      product.price * req.body.quantity;
+    const newCart = Object.keys(customer.cart).reduce((acc, key) => {
+      if (key === 'price') {
+        acc[key] = newPrice;
+      } else if (key === productId) {
+        acc[key] = req.body.quantity;
+      } else {
+        acc[key] = customer.cart[key];
+      }
+      return acc;
+    }, {});
+    const checkoutCart = await getProductsinCart(newCart);
+    res.status(200).json({ message: checkoutCart });
+  } catch (err) {
+    // console.log(err);
+    res.status(500).json({ message: 'Error updating product quantity' });
+  }
+});
+
 app.post('/makePayment', async (req, res) => {
   try {
     // const customerId = req.user.user_id;
@@ -375,7 +420,7 @@ async function getProductsinCart(cart) {
       }
 
       checkoutCart.items.push({
-        product_id: product._id.toString(),
+        itemId: product._id.toString(),
         name: product.product,
         description: product.product,
         image: product.picture,

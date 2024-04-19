@@ -4,7 +4,8 @@ export type AuthPayload = {
   user_id: string | null;
 };
 
-export type CartItem = {
+export type CartItemType = {
+  itemId: string;
   name: string;
   description?: string;
   quantity: number;

@@ -21,9 +21,6 @@ function Home() {
       if (res.errorCode) {
         return;
       }
-      console.log('res', res);
-      console.log('res.status', res.status);
-      console.log('res.content', res.content);
       if (res.status === 200) {
         setProducts(res.content);
       }

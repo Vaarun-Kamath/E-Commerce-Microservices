@@ -19,7 +19,7 @@ export default function RootLayout({
       <head>
         <title>E-Commerce-Website</title>
       </head>
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className + ' vsc-initialized'}>{children}</body>
     </html>
   );
 }

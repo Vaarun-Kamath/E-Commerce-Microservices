@@ -1,15 +1,12 @@
 'use client';
-import { getCartItems } from '@/app/api/cart/handler';
-import { CartItem } from '@/types';
-import axiosInstance from '@/utils/axiosInstance';
-// import { cartItems } from '@/components/constants/cartItems';
-import Image from 'next/image';
+import { getCartItems, sendNewQuantity } from '@/app/api/cart/handler';
+import CartProductCard from '@/components/cards/CartProductCard';
+import { CartItemType } from '@/types';
 import React, { useLayoutEffect, useState } from 'react';
-import { RxCross2 } from 'react-icons/rx';
 
 function ShoppingCart() {
   const [loading, setLoading] = useState<boolean>(false);
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartItems, setCartItems] = useState<CartItemType[]>([]);
   const [cartPrice, setCartPrice] = useState<number>(0);
   const [shippingPrice, setShippingPrice] = useState<number>(4.99);
 
@@ -34,50 +31,35 @@ function ShoppingCart() {
     fetchCartItems();
   }, []);
 
+  const setNewQuantity = async (quantity: number, itemId: string) => {
+    try {
+      setLoading(true);
+      const res = await sendNewQuantity(itemId, quantity);
+      if (res.errorCode) {
+        return;
+      }
+      if (res.status === 200) {
+        setCartItems(res.content.items);
+        setCartPrice(res.content.price);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <section className='w-screen py-24'>
       <div className='mx-auto max-w-5xl justify-center px-6 md:flex md:space-x-6 xl:px-0'>
         <div className='rounded-lg md:w-2/3'>
           {cartItems.map((item, index) => (
-            <div
+            <CartProductCard
               key={index}
-              className='justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start'
-            >
-              <Image
-                width={350}
-                height={350}
-                src={item.image}
-                alt='product-image'
-                className='w-full rounded-lg sm:w-40'
-              />
-              <div className='sm:ml-4 sm:flex sm:w-full sm:justify-between'>
-                <div className='mt-5 sm:mt-0'>
-                  <h2 className='text-lg font-bold text-gray-900'>
-                    {item.name}
-                  </h2>
-                  <p className='mt-1 text-xs text-gray-700'>
-                    {item.description ? item.description : 'No description'}
-                  </p>
-                </div>
-                <div className='mt-4 flex justify-between sm:space-y-6 sm:mt-0 sm:block sm:space-x-6'>
-                  <div className='flex items-center border-gray-100'>
-                    <span className='cursor-pointer rounded-l bg-gray-100 py-1 px-3.5 duration-100 hover:bg-green-500 hover:text-blue-50'>
-                      -
-                    </span>
-                    <span className='text-sm px-3'>{item.quantity}</span>
-                    <span className='cursor-pointer rounded-r bg-gray-100 py-1 px-3 duration-100 hover:bg-green-500 hover:text-blue-50'>
-                      +
-                    </span>
-                  </div>
-                  <div className='flex items-center gap-x-3'>
-                    <p className='text-sm'>${item.price}</p>
-                    <span className='text-xl hover:text-red-500 p-1'>
-                      <RxCross2 />
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
+              item={item}
+              setNewQuantity={setNewQuantity}
+              loading={loading}
+            />
           ))}
         </div>
         <div className='mt-6 h-full rounded-lg border bg-white p-6 shadow-md md:mt-0 md:w-1/3 sticky'>

@@ -144,20 +144,6 @@ app.delete('/removeFromCart', verifyTokenMiddleware, async (req, res) => {
   }
 });
 
-app.get('/viewCart', verifyTokenMiddleware, async (req, res) => {
-  try {
-    await axios.get(`${process.env.DB_SERVER}/viewCart`).then((response) => {
-      res.status(response.status).json({
-        content: response.data.message,
-        status: response.status,
-      });
-    });
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'Why Internal server error' });
-  }
-});
-
 app.get('/getCartItems', verifyTokenMiddleware, async (req, res) => {
   try {
     await axios
@@ -179,7 +165,47 @@ app.get('/getCartItems', verifyTokenMiddleware, async (req, res) => {
   }
 });
 
+app.patch('/setItemQuantity', verifyTokenMiddleware, async (req, res) => {
+  try {
+    console.log('req.Body: ', {
+      ...req.body,
+      user: req.user,
+    });
+    await axios
+      .patch(`${process.env.DB_SERVER}/setItemQuantity`, {
+        ...req.body,
+        user: req.user,
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          res
+            .status(response.status)
+            .json({ content: response.data.message, status: response.status });
+        } else {
+          res.status(500).json({
+            content: 'Internal server error STATUS NOT 200',
+            status: 500,
+          });
+        }
+      })
+      .catch((error) => {
+        // console.error('Error:', error);
+        res.status(500).json({
+          content: 'Internal server error CATCH ERROR',
+          status: 500,
+          error,
+        });
+      });
+  } catch (error) {
+    // console.error('Error:', error);
+    res
+      .status(500)
+      .json({ error: 'Internal server error FULL TRY CATCH ERROR' });
+  }
+});
+
 //* Testing Purposes
+
 app.get('/sendRequest', verifyTokenMiddleware, async (req, res) => {
   try {
     await axios

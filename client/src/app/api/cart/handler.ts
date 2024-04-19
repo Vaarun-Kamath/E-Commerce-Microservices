@@ -77,3 +77,29 @@ export const getCartItems = async () => {
     }
   }
 };
+
+export const sendNewQuantity = async (itemId: string, quantity: number) => {
+  try {
+    const res = await axiosInstance.patch(
+      `${BACKEND_URL}/api/products/setItemQuantity`,
+      {
+        productId: itemId,
+        quantity,
+      }
+    );
+    const { data } = res;
+    return data;
+  } catch (error) {
+    if (isAxiosError(error) && error.response) {
+      const { status, errorCode, errorMessage } = error.response.data;
+      return { status, errorCode, errorMessage };
+    } else {
+      console.error(error);
+      return {
+        status: 500,
+        errorCode: 'PRODUCT_SET_QUANTITY_API_CALL_ERROR',
+        errorMessage: 'Please try again later.',
+      };
+    }
+  }
+};
