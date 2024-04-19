@@ -85,7 +85,12 @@ app.get('/sendRequestCustomer', async (req, res) => {
 });
 
 app.get('/someCustomers', (req, res) => {
-  res.status(200).json({ message: 'Here are some customers' });
+  try {
+    res.status(200).json({ message: 'Here are some customers' });
+  } catch (err) {
+    // console.log(err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
 });
 
 app.listen(PORT, () => {

@@ -1,61 +1,38 @@
 'use client';
+import { getCartItems } from '@/app/api/cart/handler';
+import { CartItem } from '@/types';
+import axiosInstance from '@/utils/axiosInstance';
+// import { cartItems } from '@/components/constants/cartItems';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import { RxCross2 } from 'react-icons/rx';
 
 function ShoppingCart() {
   const [loading, setLoading] = useState<boolean>(false);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartPrice, setCartPrice] = useState<number>(0);
+  const [shippingPrice, setShippingPrice] = useState<number>(4.99);
 
-  const cartItems = [
-    {
-      name: 'Nike Air Max 2019',
-      description: '36EU - 4US',
-      quantity: 3,
-      price: '259.000 $',
-      image:
-        'https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-    },
-    {
-      name: 'Nike Air Max 2019',
-      description: '36EU - 4US',
-      quantity: 3,
-      price: '259.000 $',
-      image:
-        'https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-    },
-    {
-      name: 'Nike Air Max 2019',
-      description: '36EU - 4US',
-      quantity: 3,
-      price: '259.000 $',
-      image:
-        'https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-    },
-    {
-      name: 'Nike Air Max 2019',
-      description: '36EU - 4US',
-      quantity: 3,
-      price: '259.000 $',
-      image:
-        'https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-    },
-    {
-      name: 'Nike Air Max 2019',
-      description: '36EU - 4US',
-      quantity: 3,
-      price: '259.000 $',
-      image:
-        'https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-    },
-    {
-      name: 'Nike Air Max 2019',
-      description: '36EU - 4US',
-      quantity: 3,
-      price: '259.000 $',
-      image:
-        'https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-    },
-  ];
+  useLayoutEffect(() => {
+    setLoading(true);
+    const fetchCartItems = async () => {
+      try {
+        const res = await getCartItems();
+        if (res.errorCode) {
+          return;
+        }
+        if (res.status === 200) {
+          setCartItems(res.content.items);
+          setCartPrice(res.content.price);
+        }
+      } catch (error) {
+        console.error('Error fetching cart items', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCartItems();
+  }, []);
 
   return (
     <section className='w-screen py-24'>
@@ -79,7 +56,7 @@ function ShoppingCart() {
                     {item.name}
                   </h2>
                   <p className='mt-1 text-xs text-gray-700'>
-                    {item.description}
+                    {item.description ? item.description : 'No description'}
                   </p>
                 </div>
                 <div className='mt-4 flex justify-between sm:space-y-6 sm:mt-0 sm:block sm:space-x-6'>
@@ -93,7 +70,7 @@ function ShoppingCart() {
                     </span>
                   </div>
                   <div className='flex items-center gap-x-3'>
-                    <p className='text-sm'>{item.price}</p>
+                    <p className='text-sm'>${item.price}</p>
                     <span className='text-xl hover:text-red-500 p-1'>
                       <RxCross2 />
                     </span>
@@ -106,17 +83,19 @@ function ShoppingCart() {
         <div className='mt-6 h-full rounded-lg border bg-white p-6 shadow-md md:mt-0 md:w-1/3 sticky'>
           <div className='mb-2 flex justify-between'>
             <p className='text-gray-700'>Subtotal</p>
-            <p className='text-gray-700'>$129.99</p>
+            <p className='text-gray-700'>${cartPrice}</p>
           </div>
           <div className='flex justify-between'>
             <p className='text-gray-700'>Shipping</p>
-            <p className='text-gray-700'>$4.99</p>
+            <p className='text-gray-700'>${shippingPrice}</p>
           </div>
           <hr className='my-4' />
           <div className='flex justify-between'>
             <p className='text-lg font-bold'>Total</p>
             <div className=''>
-              <p className='mb-1 text-lg font-bold'>$134.98 USD</p>
+              <p className='mb-1 text-lg font-bold'>
+                ${cartPrice + shippingPrice} USD
+              </p>
               <p className='text-sm text-gray-700'>including VAT</p>
             </div>
           </div>

@@ -158,6 +158,28 @@ app.get('/viewCart', verifyTokenMiddleware, async (req, res) => {
   }
 });
 
+app.get('/getCartItems', verifyTokenMiddleware, async (req, res) => {
+  try {
+    await axios
+      .get(`${process.env.DB_SERVER}/getCartItems`, {
+        params: {
+          user: req.user,
+        },
+      })
+      .then((response) => {
+        res.status(response.status).json({
+          content: response.data.message,
+          status: response.status,
+          error: response.data.error,
+        });
+      });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: 'Internal server error', error: error });
+  }
+});
+
+//* Testing Purposes
 app.get('/sendRequest', verifyTokenMiddleware, async (req, res) => {
   try {
     await axios

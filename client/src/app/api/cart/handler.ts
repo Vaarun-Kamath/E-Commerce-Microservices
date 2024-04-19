@@ -55,3 +55,25 @@ export const removeProductFromCart = async (productId: string) => {
     }
   }
 };
+
+export const getCartItems = async () => {
+  try {
+    const res = await axiosInstance.get(
+      `${BACKEND_URL}/api/products/getCartItems`
+    );
+    const { data } = res;
+    return data;
+  } catch (error) {
+    if (isAxiosError(error) && error.response) {
+      const { status, errorCode, errorMessage } = error.response.data;
+      return { status, errorCode, errorMessage };
+    } else {
+      console.error(error);
+      return {
+        status: 500,
+        errorCode: 'PRODUCTS_GET_CART_ITEMS_API_CALL_ERROR',
+        errorMessage: 'Please try again later.',
+      };
+    }
+  }
+};

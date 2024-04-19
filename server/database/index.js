@@ -161,7 +161,6 @@ app.post('/addToCart', async (req, res) => {
     );
     res.status(200).json({ message: 'Product added to cart' });
   } catch (err) {
-    // console.log(err);
     res
       .status(500)
       .json({ message: 'Error adding product to cart(server error)' });
@@ -185,11 +184,7 @@ app.delete('/removeFromCart', async (req, res) => {
     const product = await Product.findById(productId);
     const newPrice =
       customer.cart.price - product.price * customer.cart[productId];
-
-    console.log('newPrice', newPrice);
-    console.log('customer.cart: ', customer.cart);
     const newCart = Object.keys(customer.cart).reduce((acc, key) => {
-      console.log('key: ', key);
       if (key === 'price') {
         acc[key] = newPrice;
       } else if (key !== productId) {
@@ -197,8 +192,6 @@ app.delete('/removeFromCart', async (req, res) => {
       }
       return acc;
     }, {});
-
-    console.log('newCart: ', newCart);
     await User.updateOne(
       { _id: new ObjectId(customerId) },
       {
@@ -265,37 +258,6 @@ app.post('/makePayment', async (req, res) => {
   }
 });
 
-async function getProductsinCart(cart) {
-  try {
-    // const customerData = await User.findById(customerId);
-    let orders = [];
-
-    for (const itemId of Object.keys(cart)) {
-      if (itemId === 'price') {
-        orders.push({ price: cart['price'] });
-      } else {
-        let product = await Product.findById(itemId);
-        if (!product) {
-          console.error(`Product with ID ${itemId} not found.`);
-          continue; // Skip to the next iteration if product is not found
-        }
-        orders.push({
-          product_id: product._id,
-          product_name: product.name,
-          product_picture: product.picture,
-          product_price: product.price,
-          product_quantity: cart[itemId],
-        });
-      }
-    }
-
-    return orders;
-  } catch (err) {
-    // console.log(err);
-    res.status(500).json({ message: 'Internal Server Error' });
-  }
-}
-
 app.get('/getOrders', async (req, res) => {
   try {
     // const customerId = req.user.user_id;
@@ -339,25 +301,20 @@ app.get('/getOrder', async (req, res) => {
   }
 });
 
-app.get('/viewCart', async (req, res) => {
+app.get('/getCartItems', async (req, res) => {
   try {
-    // const customerId = req.user.user_id;
-    const customerId = '660927aa2a095a0885ad20e7';
-    // req.body.customerId.toString();
+    const customerId = req.query.user.user_id;
     const customerData = await User.findById(customerId);
+
     if (customerData.length === 0) {
       res.status(404).json({ message: 'Customer not found' });
       return;
     }
-    const orders = await getProductsinCart(customerData['cart']);
-    if (orders === 'Error') {
-      res.status(500).json({ message: 'Internal Server Error in function' });
-    } else {
-      res.status(200).json({ message: orders });
-    }
+    const checkoutCart = await getProductsinCart(customerData['cart']);
+    res.status(200).json({ message: checkoutCart });
   } catch (err) {
     // console.log(err);
-    res.status(500).json({ message: 'Internal Server Error' });
+    res.status(500).json({ message: 'Internal Server Error', error: err });
   }
 });
 
@@ -395,6 +352,44 @@ app.post('/placeOrder', async (req, res) => {
     res.status(400).json({ message: 'Error placing order' });
   }
 });
+
+async function getProductsinCart(cart) {
+  try {
+    var checkoutCart = {
+      items: [],
+      price: cart['price'],
+    };
+
+    const cartKeys = Object.keys(cart);
+
+    for (const itemId of cartKeys) {
+      if (itemId === 'price') {
+        continue;
+      }
+
+      const product = await Product.findById(itemId);
+
+      if (!product) {
+        console.error(`Product with ID ${itemId} not found.`);
+        continue;
+      }
+
+      checkoutCart.items.push({
+        product_id: product._id.toString(),
+        name: product.product,
+        description: product.product,
+        image: product.picture,
+        price: product.price * cart[itemId],
+        quantity: cart[itemId],
+      });
+    }
+
+    return checkoutCart;
+  } catch (err) {
+    // console.log(err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+}
 
 app.listen(PORT, () => {
   console.log('Server is running on port 8080');
