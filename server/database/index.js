@@ -63,7 +63,7 @@ app.get('/getCustomers', async (req, res) => {
 
 app.post('/addCustomer', async (req, res) => {
   try {
-    console.log(req.body);
+    // console.log(req.body);
     const { name, username, email } = req.body;
     const newCustomer = await User.create({
       name: name,
@@ -72,16 +72,35 @@ app.post('/addCustomer', async (req, res) => {
     });
     res.status(201).json({ message: 'Customer added successfully' });
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     res.status(400).json({ message: 'Error adding customer' });
   }
 });
 
 app.get('/getAllProducts', async (req, res) => {
-  const productsData = await Product.find({});
-  if (productsData.length === 0)
-    res.status(404).json({ message: 'No products found' });
-  else res.status(200).json({ message: productsData });
+  try {
+    const productsData = await Product.find({});
+    const user = await User.find({
+      _id: new ObjectId(req.query.user.user_id),
+    });
+
+    const userCart = user[0].cart;
+    const modifiedProductsData = productsData.map((product) => {
+      const modifiedProduct = { ...product.toObject() }; // Create a new object from the product document
+      if (userCart.hasOwnProperty(modifiedProduct._id.toString())) {
+        modifiedProduct.addedToCart = true;
+      } else {
+        modifiedProduct.addedToCart = false;
+      }
+      return modifiedProduct;
+    });
+
+    if (modifiedProductsData.length === 0)
+      res.status(404).json({ message: 'No products found' });
+    else res.status(200).json({ message: modifiedProductsData });
+  } catch (err) {
+    res.status(500).json({ message: 'Internal Server Error', error: err });
+  }
 });
 
 app.get('/getProduct', async (req, res) => {
@@ -94,14 +113,14 @@ app.get('/getProduct', async (req, res) => {
       res.status(404).json({ message: 'No products found' });
     else res.status(200).json({ message: productsData });
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
 
 app.post('/addProduct', async (req, res) => {
   try {
-    console.log(req.body);
+    // console.log(req.body);
     const { name, price, quantity, pictureLink } = req.body;
     const newProduct = await Product.create({
       name: name,
@@ -111,17 +130,14 @@ app.post('/addProduct', async (req, res) => {
     });
     res.status(201).json({ message: 'Product added successfully' });
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     res.status(400).json({ message: 'Error adding product' });
   }
 });
 
-app.post('/addtocart', async (req, res) => {
+app.post('/addToCart', async (req, res) => {
   try {
-    // const customerId = req.user.user_id;
-    const customerId = 
-    // req.body.customerId.toString(); //for testing purposes only
-    '660927aa2a095a0885ad20e7';
+    const customerId = req.body.user.user_id;
     const productId = req.body.productId.toString();
     const quantity = Number(req.body.quantity);
     const customerData = await User.findById(customerId);
@@ -144,18 +160,64 @@ app.post('/addtocart', async (req, res) => {
       }
     );
     res.status(200).json({ message: 'Product added to cart' });
-  } catch {
-    console.log(err);
+  } catch (err) {
+    // console.log(err);
     res
       .status(500)
       .json({ message: 'Error adding product to cart(server error)' });
   }
 });
 
+app.delete('/removeFromCart', async (req, res) => {
+  try {
+    const customerId = req.query.user.user_id;
+    const productId = req.query.productId.toString();
+
+    const customer = await User.findById(customerId);
+    if (!customer) {
+      res.status(404).json({ message: 'Customer not found' });
+      return;
+    }
+    if (!customer.cart[productId]) {
+      res.status(404).json({ message: 'Product not found in cart' });
+      return;
+    }
+    const product = await Product.findById(productId);
+    const newPrice =
+      customer.cart.price - product.price * customer.cart[productId];
+
+    console.log('newPrice', newPrice);
+    console.log('customer.cart: ', customer.cart);
+    const newCart = Object.keys(customer.cart).reduce((acc, key) => {
+      console.log('key: ', key);
+      if (key === 'price') {
+        acc[key] = newPrice;
+      } else if (key !== productId) {
+        acc[key] = customer.cart[key];
+      }
+      return acc;
+    }, {});
+
+    console.log('newCart: ', newCart);
+    await User.updateOne(
+      { _id: new ObjectId(customerId) },
+      {
+        $set: {
+          cart: newCart,
+        },
+      }
+    );
+    res.status(200).json({ message: 'Product removed from cart' });
+  } catch (err) {
+    // console.log(err);
+    res.status(500).json({ message: 'Error removing product from cart' });
+  }
+});
+
 app.post('/makePayment', async (req, res) => {
   try {
     // const customerId = req.user.user_id;
-    const customerId = "660927aa2a095a0885ad20e7"
+    const customerId = '660927aa2a095a0885ad20e7';
     // req.body.customerId.toString();
     // const amount = Number(req.body.amount);
     const customerData = await User.findById(customerId);
@@ -198,7 +260,7 @@ app.post('/makePayment', async (req, res) => {
       message: 'Payment Successful... Your order will be delivered soon',
     });
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
@@ -229,15 +291,15 @@ async function getProductsinCart(cart) {
 
     return orders;
   } catch (err) {
-    console.log(err);
-    return 'Error';
+    // console.log(err);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 }
 
 app.get('/getOrders', async (req, res) => {
   try {
-        // const customerId = req.user.user_id;
-    const customerId = "660927aa2a095a0885ad20e7" 
+    // const customerId = req.user.user_id;
+    const customerId = '660927aa2a095a0885ad20e7';
     // req.body.customerId.toString();
     const orders = await Store.find(
       { customerId: customerId },
@@ -249,18 +311,21 @@ app.get('/getOrders', async (req, res) => {
       res.status(200).json({ message: orders });
     }
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
 
 app.get('/getOrder', async (req, res) => {
   try {
-        // const customerId = req.user.user_id;
-    const customerId = "660927aa2a095a0885ad20e7" 
+    // const customerId = req.user.user_id;
+    const customerId = '660927aa2a095a0885ad20e7';
     // req.body.customerId.toString();
     const order_id = req.query.order_id.toString();
-    const order = await Store.findOne({_id: new ObjectId(order_id), customerId: customerId});
+    const order = await Store.findOne({
+      _id: new ObjectId(order_id),
+      customerId: customerId,
+    });
     if (!order) {
       res.status(404).json({ message: 'Order not found' });
       return;
@@ -269,15 +334,15 @@ app.get('/getOrder', async (req, res) => {
     // result.push({ amountPaid: order['amountPaid'] });
     res.status(200).json({ message: result });
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     res.status(500).json({ message: 'DB Internal Server Error' });
   }
 });
 
 app.get('/viewCart', async (req, res) => {
   try {
-        // const customerId = req.user.user_id;
-    const customerId = "660927aa2a095a0885ad20e7" 
+    // const customerId = req.user.user_id;
+    const customerId = '660927aa2a095a0885ad20e7';
     // req.body.customerId.toString();
     const customerData = await User.findById(customerId);
     if (customerData.length === 0) {
@@ -291,8 +356,43 @@ app.get('/viewCart', async (req, res) => {
       res.status(200).json({ message: orders });
     }
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+app.post('/placeOrder', async (req, res) => {
+  try {
+    const { user_id } = req.body;
+    const customerData = await User.findById(user_id);
+    if (!customerData) {
+      res.status(404).json({ message: 'Customer not found' });
+      return;
+    }
+    const cart = customerData.cart;
+    if (cart.length === 0) {
+      res.status(400).json({ message: 'Cart is empty' });
+      return;
+    }
+    for (let i = 0; i < cart.length; i++) {
+      const product_id = cart[i].product_id;
+      const product = await Product.findById(product_id).select('quantity');
+      if (product.quantity < cart[i].quantity) {
+        res.status(400).json({ message: 'Not enough stock' });
+        return;
+      }
+    }
+    for (let i = 0; i < cart.length; i++) {
+      const product_id = cart[i].product_id;
+      const product = await Product.findById(product_id).select('quantity');
+      const newQuantity = product.quantity - cart[i].quantity;
+      await Product.findByIdAndUpdate(product_id, { quantity: newQuantity });
+    }
+    await User.findByIdAndUpdate(user_id, { cart: [] });
+    res.status(200).json({ message: 'Order placed successfully' });
+  } catch (err) {
+    // console.log(err);
+    res.status(400).json({ message: 'Error placing order' });
   }
 });
 

@@ -1,12 +1,14 @@
 import Image from 'next/image';
-import React from 'react';
+import React, { useState } from 'react';
 import StyledLink from '../atoms/StyledLink';
 import { CiShoppingCart } from 'react-icons/ci';
-import { FiMinus } from 'react-icons/fi';
-import { FaPlus } from 'react-icons/fa6';
 import { MdOutlineRemoveShoppingCart } from 'react-icons/md';
 
 import { FaHeart } from 'react-icons/fa';
+import {
+  addProductToCart,
+  removeProductFromCart,
+} from '@/app/api/cart/handler';
 
 function ProductShowCard(props: {
   product: {
@@ -18,6 +20,41 @@ function ProductShowCard(props: {
     addedToCart?: boolean;
   };
 }) {
+  const [inCart, SetInCart] = useState(props.product.addedToCart);
+  const handleAddToCart = async () => {
+    try {
+      const res = await addProductToCart(props.product._id, 1);
+      if (res.errorCode) {
+        return;
+      }
+      if (res.status === 200) {
+        console.log('Product added to cart');
+        SetInCart(true);
+      } else {
+        console.log('Product not added to cart');
+      }
+    } catch (err) {
+      console.log('error: ', err);
+    }
+  };
+
+  const handleRemoveFromCart = async () => {
+    try {
+      const res = await removeProductFromCart(props.product._id);
+      if (res.errorCode) {
+        return;
+      }
+      if (res.status === 200) {
+        console.log('Product removed from cart');
+        SetInCart(false);
+      } else {
+        console.log('Product not removed from cart');
+      }
+    } catch (err) {
+      console.log('error: ', err);
+    }
+  };
+
   return (
     <div className='flex flex-col'>
       <div
@@ -50,10 +87,10 @@ function ProductShowCard(props: {
           </p>
         </div>
       </div>
-      {props.product.addedToCart ? (
+      {inCart ? (
         <>
           <div className='relative flex items-center mt-6 select-none'>
-            <button
+            {/* <button
               type='button'
               id='decrement-button'
               className='select-none hover:bg-red-500 hover:text-white border rounded-s-lg p-3 h-11 focus:ring-green-100 focus:ring-2 focus:outline-none duration-200 transition-all'
@@ -75,9 +112,12 @@ function ProductShowCard(props: {
               className='select-none hover:bg-green-600 hover:text-white border rounded-e-lg p-3 h-11 focus:ring-green-100 focus:ring-2 focus:outline-none duration-200 transition-all'
             >
               <FaPlus />
-            </button>
+            </button> */}
           </div>
-          <button className='select-none flex flex-row justify-center items-center gap-2 mt-2 w-full bg-white border border-gray-300 rounded-md py-2 text-base font-medium text-gray-900 hover:bg-red-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all duration-200'>
+          <button
+            onClick={handleRemoveFromCart}
+            className='select-none flex flex-row justify-center items-center gap-2 mt-2 w-full bg-white border border-gray-300 rounded-md py-2 text-base font-medium text-gray-900 hover:bg-red-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all duration-200'
+          >
             <span className='text-xl p-1'>
               <MdOutlineRemoveShoppingCart />
             </span>
@@ -86,7 +126,10 @@ function ProductShowCard(props: {
         </>
       ) : (
         <div className='flex flex-col'>
-          <button className='select-none flex flex-row justify-center items-center gap-2 mt-6 w-full bg-gray-900 border border-transparent rounded-md py-2 text-base font-medium text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all duration-200'>
+          <button
+            onClick={handleAddToCart}
+            className='select-none flex flex-row justify-center items-center gap-2 mt-6 w-full bg-gray-900 border border-transparent rounded-md py-2 text-base font-medium text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all duration-200'
+          >
             <span className='text-2xl '>
               <CiShoppingCart />
             </span>

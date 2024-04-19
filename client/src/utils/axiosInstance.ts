@@ -1,13 +1,13 @@
-import axios from "axios";
+import axios from 'axios';
 
 const axiosInstance = axios.create({
   validateStatus: function (status) {
     return status >= 200 && status < 400;
   },
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
-  withCredentials: false,
+  withCredentials: true,
 });
 
 export default axiosInstance;
