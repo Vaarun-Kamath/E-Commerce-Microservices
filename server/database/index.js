@@ -200,7 +200,8 @@ app.delete('/removeFromCart', async (req, res) => {
         },
       }
     );
-    res.status(200).json({ message: 'Product removed from cart' });
+    const checkoutCart = await getProductsinCart(newCart);
+    res.status(200).json({ message: checkoutCart });
   } catch (err) {
     // console.log(err);
     res.status(500).json({ message: 'Error removing product from cart' });

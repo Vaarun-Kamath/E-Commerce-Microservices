@@ -8,11 +8,8 @@ function CartProductCard(props: {
   item: CartItemType;
   loading: boolean;
   setNewQuantity: (quantity: number, itemId: string) => void;
+  removeItemFromCart: (itemId: string) => void;
 }) {
-  const handleRemoveItem = () => {
-    console.log('Remove item from cart');
-  };
-
   return (
     <div className='justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start'>
       <Image
@@ -37,7 +34,7 @@ function CartProductCard(props: {
             quantity={props.item.quantity}
           />
           <button
-            onClick={handleRemoveItem}
+            onClick={() => props.removeItemFromCart(props.item.itemId)}
             className='flex items-center gap-x-3'
           >
             <p className='text-sm'>${props.item.price}</p>

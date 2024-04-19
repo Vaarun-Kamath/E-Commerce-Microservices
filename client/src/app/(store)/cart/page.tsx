@@ -1,5 +1,10 @@
 'use client';
-import { getCartItems, sendNewQuantity } from '@/app/api/cart/handler';
+import {
+  getCartItems,
+  removeProductFromCart,
+  sendNewQuantity,
+} from '@/app/api/cart/handler';
+import StyledLink from '@/components/atoms/StyledLink';
 import CartProductCard from '@/components/cards/CartProductCard';
 import { CartItemType } from '@/types';
 import React, { useLayoutEffect, useState } from 'react';
@@ -31,10 +36,32 @@ function ShoppingCart() {
     fetchCartItems();
   }, []);
 
+  useLayoutEffect(() => {
+    setShippingPrice(cartPrice > 0 ? 4.99 : 0.0);
+  }, [cartPrice]);
+
   const setNewQuantity = async (quantity: number, itemId: string) => {
     try {
       setLoading(true);
       const res = await sendNewQuantity(itemId, quantity);
+      if (res.errorCode) {
+        return;
+      }
+      if (res.status === 200) {
+        setCartItems(res.content.items);
+        setCartPrice(res.content.price);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const removeItemFromCart = async (itemId: string) => {
+    try {
+      setLoading(true);
+      const res = await removeProductFromCart(itemId);
       if (res.errorCode) {
         return;
       }
@@ -58,11 +85,23 @@ function ShoppingCart() {
               key={index}
               item={item}
               setNewQuantity={setNewQuantity}
+              removeItemFromCart={removeItemFromCart}
               loading={loading}
             />
           ))}
+          {cartItems.length === 0 && (
+            <div className='mb-6 rounded-lg bg-white p-6 drop-shadow-2xl flex flex-row justify-between items-center'>
+              <p className='text-xl text-gray-700'>No items in the cart</p>
+              <StyledLink
+                href='/home'
+                className='mt-4 p-4 bg-green-500 rounded-md text-white hover:bg-green-600'
+              >
+                Continue shopping
+              </StyledLink>
+            </div>
+          )}
         </div>
-        <div className='mt-6 h-full rounded-lg border bg-white p-6 shadow-md md:mt-0 md:w-1/3 sticky'>
+        <div className='mt-6 h-full rounded-lg border bg-white p-6 drop-shadow-2xl md:mt-0 md:w-1/3 sticky'>
           <div className='mb-2 flex justify-between'>
             <p className='text-gray-700'>Subtotal</p>
             <p className='text-gray-700'>${cartPrice}</p>
@@ -81,7 +120,14 @@ function ShoppingCart() {
               <p className='text-sm text-gray-700'>including VAT</p>
             </div>
           </div>
-          <button className='mt-6 w-full rounded-md bg-green-500 py-1.5 font-medium text-blue-50 hover:bg-green-600'>
+          <button
+            disabled={cartPrice + shippingPrice == 0}
+            className={
+              cartPrice + shippingPrice == 0
+                ? 'mt-6 w-full rounded-md py-1.5 font-medium text-blue-50 cursor-not-allowed bg-red-500 p-3'
+                : 'mt-6 w-full rounded-md py-1.5 font-medium text-blue-50 bg-green-500  hover:bg-green-600'
+            }
+          >
             Check out
           </button>
         </div>
