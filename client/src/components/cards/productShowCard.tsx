@@ -57,11 +57,8 @@ function ProductShowCard(props: {
 
   return (
     <div className='flex flex-col'>
-      <div
-        key={props.product._id}
-        className='group relative hover:scale-105 transition-all duration-50'
-      >
-        <div className='select-none aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-95 lg:h-80 duration-200 transition-all'>
+      <div key={props.product._id} className='group relative'>
+        <div className='select-none aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-80 lg:h-80 duration-200 transition-all'>
           <Image
             src={props.product.picture}
             alt={props.product.product}
