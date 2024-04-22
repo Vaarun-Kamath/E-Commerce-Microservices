@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: products-server-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: products-server
+  template:
+    metadata:
+      labels:
+        component: products-server
+    spec:
+      containers:
+        - name: products-server
+          image: varunchandrashekar1/products-server-593-594-606-607
+          ports:
+            - containerPort: 8002
+          env:
+            - name: PORT
+              value: "8002"
+            - name: DB_SERVER
+              value: "http://database-server-cluster-ip-service:8080"
+            - name: CUSTOMER_SERVER
+              value: "http://customer-server-cluster-ip-service:8001"
+            - name: STORE_SERVER
+              value: "http://store-server-cluster-ip-service:8000"
+            - name: JWT_SECRET
+              value: "rm2dDQL1A7gkenleDlX1FmFAMMiLUhCGSnpwdaWnzGc="

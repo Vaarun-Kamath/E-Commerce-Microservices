@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: database-server-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: database-server
+  template:
+    metadata:
+      labels:
+        component: database-server
+    spec:
+      containers:
+      - name: database-server
+        image: varunchandrashekar1/database-server-593-594-606-607
+        env:
+          - name: PORT
+            value: "8080"
+          - name: MONGO_URL
+            value: "mongodb+srv://varunkamath:varun123@e-commerce-database.eyp1x.mongodb.net/?retryWrites=true&w=majority&appName=E-Commerce-Database"
+        ports:
+        - containerPort: 8080
