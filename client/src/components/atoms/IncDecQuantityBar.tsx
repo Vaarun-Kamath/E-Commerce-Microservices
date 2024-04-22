@@ -12,7 +12,7 @@ function IncDecQuantityBar({
   quantity: number;
 }) {
   return (
-    <div className='flex items-center border-gray-100'>
+    <div className='flex items-center border-gray-100 text-black'>
       <button
         onClick={() => setNewQuantity(quantity - 1, item)}
         disabled={loading || quantity === 1}
