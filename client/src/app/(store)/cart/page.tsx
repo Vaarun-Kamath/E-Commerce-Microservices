@@ -101,7 +101,7 @@ function ShoppingCart() {
             </div>
           )}
         </div>
-        <div className='mt-6 h-full rounded-lg border bg-white p-6 drop-shadow-2xl md:mt-0 md:w-1/3 sticky'>
+        <div className='mt-6 h-full rounded-lg border bg-white p-6 drop-shadow-2xl md:mt-0 md:w-1/3 sticky text-black'>
           <div className='mb-2 flex justify-between'>
             <p className='text-gray-700'>Subtotal</p>
             <p className='text-gray-700'>${cartPrice}</p>
