@@ -14,6 +14,11 @@ pipeline {
     agent any
 
     stages {
+        stage("testing stageJenkins"){
+            steps {
+                echo 'jenkins running'
+            }
+        }
         stage('Checkout Source') {
             steps {
                 git branch: 'main', url: 'https://github.com/Vaarun-Kamath/E-Commerce-Microservices.git'
@@ -72,7 +77,7 @@ pipeline {
         
         stage('test') {
             steps {
-                sh './kubectl apply -f ./k8s'
+                echo 'to test'
             }
         }
     }
