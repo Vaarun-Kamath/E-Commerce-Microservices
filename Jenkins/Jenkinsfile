@@ -27,10 +27,11 @@ pipeline {
             }
         }
         stage('client'){
-            dir('../client')
-            steps{
-                sh 'dir'
-                sh 'npm run dev'
+            dir('../client'){
+                steps{
+                    sh 'dir'
+                    sh 'npm run dev'
+                }
             }
         }
         // stage('Build Images') {
