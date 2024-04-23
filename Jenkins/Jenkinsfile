@@ -30,7 +30,7 @@ pipeline {
             steps {
                 // dir('../client') {
                     sh 'dir'
-                    sh 'sudo apt install npm'
+                    sh 'apt install npm'
                     sh 'npm run dev'
                 // }
             }
