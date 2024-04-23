@@ -26,9 +26,9 @@ pipeline {
                 sh 'dir'
             }
         }
-        stage('client'){
-            dir('../client'){
-                steps{
+        stage('client izer') {
+            steps {
+                dir('../client') {
                     sh 'dir'
                     sh 'npm run dev'
                 }
