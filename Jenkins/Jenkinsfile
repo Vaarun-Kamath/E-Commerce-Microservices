@@ -90,7 +90,7 @@ pipeline {
                 //         databaseImage.push()
                 //     }
                 // }
-                sh 'echo "$DOCKER_PASSWORD"
+                sh 'echo "$DOCKER_PASSWORD"'
                 sh 'echo "$DOCKER_PASSWORD" | docker login -u varunchandrashekar1 --password-stdin'
                 sh "docker push ${customermicroservice}"
                 sh "docker push ${productmicroservice}"
