@@ -33,7 +33,7 @@ pipeline {
                         sh 'dir'
                         sh 'ls'
                         sh 'npm i'
-                        sh 'npm run build'
+                        // sh 'npm run build'
                     }
                 }
             }
