@@ -103,3 +103,25 @@ export const sendNewQuantity = async (itemId: string, quantity: number) => {
     }
   }
 };
+
+export const makePayment = async () => {
+  try {
+    const res = await axiosInstance.post(
+      `${BACKEND_URL}/api/store/makePayment`);
+    const { data } = res;
+    return data;
+  } catch (error) {
+    if (isAxiosError(error) && error.response) {
+      const { status, errorCode, errorMessage } = error.response.data;
+      return { status, errorCode, errorMessage };
+    } else {
+      console.error(error);
+      return {
+        status: 500,
+        errorCode: 'MAKE_PAYMENT_API_CALL_ERROR',
+        errorMessage: 'Please try again later.',
+      };
+    }
+  }
+};
+

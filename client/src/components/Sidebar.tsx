@@ -74,6 +74,15 @@ function Sidebar() {
               Cart
             </StyledLink>
             <StyledLink
+              href={'/orders'}
+              className='flex flex-row gap-3 justify-center items-center hover:text-green-700 font-semibold lg:text-sm text-xs bg-white text-green-500 py-2 px-4 rounded-full'
+            >
+              <span className='font-semibold'>
+                {/* <FaShoppingCart /> */}
+              </span>
+              Orders
+            </StyledLink>
+            <StyledLink
               href={'#'}
               className='relative flex items-center gap-2 lg:text-sm text-xs justify-between font-semibold text-green-500 transition-all duration-200 sm:ml-2 hover:text-green-700 py-2 px-7 bg-white rounded-full'
             >

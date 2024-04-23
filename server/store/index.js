@@ -4,6 +4,7 @@ const cors = require('cors');
 const axios = require('axios');
 const express = require('express');
 const dotenv = require('dotenv');
+const verifyTokenMiddleware = require('../verifyToken');
 
 dotenv.config({ path: './.env' });
 
@@ -59,10 +60,10 @@ app.get('/customer', async (req, res) => {
   }
 });
 
-app.post('/makePayment', async (req, res) => {
+app.post('/makePayment',verifyTokenMiddleware, async (req, res) => {
   try {
     await axios
-      .post(`${process.env.DB_SERVER}/makePayment`, req.body)
+      .post(`${process.env.DB_SERVER}/makePayment`, req.user)
       .then((response) => {
         // console.log(response);
         res

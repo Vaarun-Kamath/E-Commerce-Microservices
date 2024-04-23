@@ -8,16 +8,9 @@ const { ObjectId } = require('mongodb');
 dotenv.config();
 const app = express();
 
-const corsOptions = {
-  origin: ['http://customer:8001', 'http://store:8000', 'http://product:8002'],
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-  optionsSuccessStatus: 204,
-  credentials: true,
-};
-
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
@@ -262,8 +255,8 @@ app.patch('/setItemQuantity', async (req, res) => {
 
 app.post('/makePayment', async (req, res) => {
   try {
-    // const customerId = req.user.user_id;
-    const customerId = '660927aa2a095a0885ad20e7';
+    const customerId = req.body.user.user_id;
+    // const customerId = '660927aa2a095a0885ad20e7';
     // req.body.customerId.toString();
     // const amount = Number(req.body.amount);
     const customerData = await User.findById(customerId);

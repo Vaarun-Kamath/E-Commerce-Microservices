@@ -4,7 +4,7 @@ const cors = require('cors');
 const axios = require('axios');
 const express = require('express');
 const dotenv = require('dotenv');
-const verifyTokenMiddleware = require('./verifyToken');
+const verifyTokenMiddleware = require('../verifyToken');
 
 dotenv.config({ path: './.env' });
 

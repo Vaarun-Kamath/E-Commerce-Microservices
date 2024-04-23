@@ -8,12 +8,15 @@ import StyledLink from '@/components/atoms/StyledLink';
 import CartProductCard from '@/components/cards/CartProductCard';
 import { CartItemType } from '@/types';
 import React, { useLayoutEffect, useState } from 'react';
+import { makePayment } from '@/app/api/cart/handler';
+import { useRouter } from 'next/navigation';
 
 function ShoppingCart() {
   const [loading, setLoading] = useState<boolean>(false);
   const [cartItems, setCartItems] = useState<CartItemType[]>([]);
   const [cartPrice, setCartPrice] = useState<number>(0);
   const [shippingPrice, setShippingPrice] = useState<number>(4.99);
+  const router = useRouter();
 
   useLayoutEffect(() => {
     setLoading(true);
@@ -76,6 +79,23 @@ function ShoppingCart() {
     }
   };
 
+  const handleMakePayment = async () => {
+    try {
+      setLoading(true);
+      const res = await makePayment();
+      if (res.errorCode) {
+        return;
+      }
+      if (res.status === 200) {
+        router.push('/');
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <section className='w-screen py-24'>
       <div className='mx-auto max-w-5xl justify-center px-6 md:flex md:space-x-6 xl:px-0'>
@@ -121,12 +141,13 @@ function ShoppingCart() {
             </div>
           </div>
           <button
-            disabled={cartPrice + shippingPrice == 0}
+            disabled={cartPrice + shippingPrice == 0 || loading}
             className={
               cartPrice + shippingPrice == 0
                 ? 'mt-6 w-full rounded-md py-1.5 font-medium text-blue-50 cursor-not-allowed bg-red-500 p-3'
                 : 'mt-6 w-full rounded-md py-1.5 font-medium text-blue-50 bg-green-500  hover:bg-green-600'
             }
+            onClick={handleMakePayment}
           >
             Check out
           </button>
