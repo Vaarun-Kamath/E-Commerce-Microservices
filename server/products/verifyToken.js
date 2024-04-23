@@ -1,17 +1,21 @@
 const jwt = require('jsonwebtoken');
 
 const verifyTokenMiddleware = async (req, res, next) => {
+  console.log("REQUEST", req, "ENDING\n\n\n\n\n\n");
   try {
-    const cookies = req.headers.cookie.split(';').reduce((acc, cookie) => {
-      const [key, value] = cookie.split('=');
-      acc[key.trim()] = value;
-      return acc;
-    }, {});
+    // const cookies = req.headers.cookie.split(';').reduce((acc, cookie) => {
+    //   const [key, value] = cookie.split('=');
+    //   acc[key.trim()] = value;
+    //   return acc;
+    // }, {});
 
-    const authorizationToken = cookies['next-auth.session-token'];
-    if (!authorizationToken) {
-      return res.status(402).json('Not autorized to access this resource.');
-    }
+    const authorizationToken = req.query['cookie'];
+    console.log("cat");
+
+    // const authorizationToken = cookies['next-auth.session-token'];
+    // if (!authorizationToken) {
+    //   return res.status(402).json('Not autorized to access this resource.');
+    // }
 
     jwt.verify(
       authorizationToken,
@@ -23,6 +27,12 @@ const verifyTokenMiddleware = async (req, res, next) => {
         req.user = decoded.user;
       }
     );
+    // req.user = {
+    //   user_id: '660927aa2a095a0885ad20e7',
+    //   name: 'Varun Kamath',
+    //   username: 'varunk',
+    //   email: 'varunkamath05@gmail.com'
+    // }
     next();
   } catch (error) {
     console.log('error: ', error);
