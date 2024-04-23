@@ -42,21 +42,25 @@ pipeline {
             steps {
                 dir('server/customer') {
                     script {
+                        sh 'dir'
                         customerImage = docker.build customermicroservice
                     }
                 }
                 dir('server/products') {
                     script {
+                        sh 'dir'
                         productImage = docker.build productmicroservice
                     }
                 }
                 dir('server/store') {
                     script {
+                        sh 'dir'
                         storeImage = docker.build storemicroservice
                     }
                 }
                 dir('server/database') {
                     script {
+                        sh 'dir'
                         databaseImage = docker.build databasemicroservice
                     }
                 }
@@ -65,10 +69,11 @@ pipeline {
         stage('Push Images') {
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
-                        orderImage.push()
+                    docker.withRegistry('', 'varunchandrashekar1') {
+                        customerImage.push()
                         productImage.push()
-                        userImage.push()
+                        storeImage.push()
+                        databaseImage.push()
                     }
                 }
             }
