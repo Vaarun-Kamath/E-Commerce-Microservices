@@ -30,7 +30,11 @@ pipeline {
             steps {
                 // dir('../client') {
                     sh 'dir'
-                    sh 'apt install npm'
+                    docker.inside('-u root') {
+                        // Switch to the root user
+                        sh 'apt-get update && apt-get install -y npm'
+                    }
+                    sh 'ls'
                     sh 'npm run dev'
                 // }
             }
