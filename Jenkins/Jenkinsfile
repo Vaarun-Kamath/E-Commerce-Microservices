@@ -40,37 +40,62 @@ pipeline {
         }
         stage('Build Images') {
             steps {
-                dir('server/customer') {
-                    script {
-                        customerImage = docker.build customermicroservice
-                    }
-                }
-                dir('server/products') {
-                    script {
-                        productImage = docker.build productmicroservice
-                    }
-                }
-                dir('server/store') {
-                    script {
-                        storeImage = docker.build storemicroservice
-                    }
-                }
-                dir('server/database') {
-                    script {
-                        databaseImage = docker.build databasemicroservice
-                    }
+                script{
+                    customerImage = docker.build("${customermicroservice}", "--pull --file server/customer/Dockerfile server/customer")
+                    productImage = docker.build("${productmicroservice}", "--pull --file server/products/Dockerfile server/products")
+                    storeImage = docker.build("${storemicroservice}", "--pull --file server/store/Dockerfile server/store")
+                    databaseImage = docker.build("${databasemicroservice}", "--pull --file server/database/Dockerfile server/database")
+                    
+                    // dir('server/customer') {
+                    //     script {
+                    //         sh 'dir'
+                    //         // customerImage = docker.build customermicroservice
+                    //         sh "docker build -t ${customermicroservice} ."
+                    //     }
+                    // }
+                    
+                    // dir('server/products') {
+                    //     script {
+                    //         sh 'dir'
+                    //         // productImage = docker.build productmicroservice
+                    //         sh "docker build -t ${productmicroservice} ."
+                    //     }
+                    // }
+                    
+                    // dir('server/store') {
+                    //     script {
+                    //         sh 'dir'
+                    //         // storeImage = docker.build storemicroservice
+                    //         sh "docker build -t ${storemicroservice} ."
+                    //     }
+                    // }
+                    
+                    // dir('server/database') {
+                    //     script {
+                    //         sh 'dir'
+                    //         // databaseImage = docker.build databasemicroservice
+                    //         sh "docker build -t ${databasemicroservice} ."
+                    //     }
+                    // }
                 }
             }
         }
         stage('Push Images') {
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
-                        orderImage.push()
+                    docker.withRegistry('https://index.docker.io/v1/', 'varunchandrashekar1') {
+                        customerImage.push()
                         productImage.push()
-                        userImage.push()
+                        storeImage.push()
+                        databaseImage.push()
                     }
                 }
+                // sh 'echo "$DOCKER_PASSWORD"'
+                // sh 'echo "$DOCKER_PASSWORD" | docker login -u varunchandrashekar1 --password-stdin'
+                // sh "docker push ${customermicroservice}"
+                // sh "docker push ${productmicroservice}"
+                // sh "docker push ${storemicroservice}"
+                // sh "docker push ${databasemicroservice}"
             }
         }
 
