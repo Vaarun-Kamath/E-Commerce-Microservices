@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: store-server
-          image: varunchandrashekar1/store-server-593-594-606-607
+          image: varunchandrashekar1/store-server-593-594-606-607:latest
           ports:
             - containerPort: 8000
           env:

@@ -30,6 +30,7 @@ app.get('/', (req, res) => {
 
 app.get('/getProducts', verifyTokenMiddleware, async (req, res) => {
   try {
+    console.log("BEGIN", req, "ENDING");
     await axios
       .get(`${process.env.DB_SERVER}/getAllProducts`, {
         params: {
