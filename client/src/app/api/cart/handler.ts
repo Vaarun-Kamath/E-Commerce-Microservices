@@ -78,6 +78,32 @@ export const getCartItems = async () => {
   }
 };
 
+export const getOrderItems = async (order_id: string) => {
+  try {
+    const res = await axiosInstance.get(
+      `${BACKEND_URL}/api/store/getOrder`,{
+        params:{
+          order_id
+        }
+      }
+    );
+    const { data } = res;
+    return data;
+  } catch (error) {
+    if (isAxiosError(error) && error.response) {
+      const { status, errorCode, errorMessage } = error.response.data;
+      return { status, errorCode, errorMessage };
+    } else {
+      console.error(error);
+      return {
+        status: 500,
+        errorCode: 'ORDER_GET_CART_ITEMS_API_CALL_ERROR',
+        errorMessage: 'Please try again later.',
+      };
+    }
+  }
+};
+
 export const sendNewQuantity = async (itemId: string, quantity: number) => {
   try {
     const res = await axiosInstance.patch(

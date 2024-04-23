@@ -87,29 +87,6 @@ function ProductShowCard(props: {
       {inCart ? (
         <>
           <div className='relative flex items-center mt-6 select-none'>
-            {/* <button
-              type='button'
-              id='decrement-button'
-              className='select-none hover:bg-red-500 hover:text-white border rounded-s-lg p-3 h-11 focus:ring-green-100 focus:ring-2 focus:outline-none duration-200 transition-all'
-            >
-              <FiMinus />
-            </button>
-            <input
-              type='text'
-              id='bedrooms-input'
-              className='select-none  border-x-0 h-11 flex justify-center items-center font-medium text-center text-md w-full '
-              placeholder=''
-              value='3'
-              required
-              disabled
-            />
-            <button
-              type='button'
-              id='increment-button'
-              className='select-none hover:bg-green-600 hover:text-white border rounded-e-lg p-3 h-11 focus:ring-green-100 focus:ring-2 focus:outline-none duration-200 transition-all'
-            >
-              <FaPlus />
-            </button> */}
           </div>
           <button
             onClick={handleRemoveFromCart}

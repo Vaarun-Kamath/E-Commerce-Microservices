@@ -3,36 +3,41 @@
 import { getProducts } from '@/app/api/home/handler';
 import ProductShowCard from '@/components/cards/productShowCard';
 import React, { useEffect, useState } from 'react';
+import { getOrders } from '@/app/api/orders/handler';
+import StyledLink from '@/components/atoms/StyledLink';
 
 function Orders() {
-
-
+  const [orders, setOrders] = useState([]);
   useEffect(() => {
-    const getAllProducts = async () => {
-      const res = await getProducts();
+    const getAllOrders = async () => {
+      const res = await getOrders();
       if (res.errorCode) {
         return;
       }
       if (res.status === 200) {
-        setProducts(res.content);
+        setOrders(res.content);
       }
     };
-    getAllProducts();
+    getAllOrders();
   }, []);
 
   useEffect(() => {
-    console.log(products);
-  }, [products]);
+    console.log(orders);
+  }, [orders]);
 
   return (
     <div className='px-2 sm:px-6 sm:py-24 lg:px-8 w-full h-full'>
-      <h2 className='text-5xl font-black text-gray-700 tracking-tight'>
-        Trending
+      <h2 className='text-5xl font-black text-gray-700 tracking-tight mb-3'>
+        Orders
       </h2>
-      <div className='mt-10 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-5 xl:gap-x-8 w-full justify-center px-10 py-5'>
-        {products.length > 0 ? (
-          products.map((product, index) => (
-            <ProductShowCard key={index} product={product} />
+      <div className='flex flex-col gap-10'>
+        {orders.length > 0 ? (
+          orders.map((order, index) => (
+            <StyledLink key={index} href={"/orders/"+order['_id']} className='border-2 bg-gray-50 flex flex-col gap-2 p-5'>
+              <p>OrderID: {order['_id']}</p>
+              <p>Amount Paid: {order['amountPaid']}</p>
+              <p>Date of Payment: {order['date_of_payment']}</p>
+              </StyledLink>
           ))
         ) : (
           <>
