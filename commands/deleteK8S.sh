@@ -31,4 +31,4 @@ kubectl delete ingress products
 kubectl delete ingress store
 
 # echo "FUCK OFF INGRESS"
-# kubectl delete namespace ingress-nginx
+kubectl delete namespace ingress-nginx
