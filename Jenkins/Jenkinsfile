@@ -40,30 +40,34 @@ pipeline {
         }
         stage('Build Images') {
             steps {
-                dir('server/customer') {
-                    script {
-                        sh 'dir'
-                        customerImage = docker.build customermicroservice
-                    }
-                }
-                dir('server/products') {
-                    script {
-                        sh 'dir'
-                        productImage = docker.build productmicroservice
-                    }
-                }
-                dir('server/store') {
-                    script {
-                        sh 'dir'
-                        storeImage = docker.build storemicroservice
-                    }
-                }
-                dir('server/database') {
-                    script {
-                        sh 'dir'
-                        databaseImage = docker.build databasemicroservice
-                    }
-                }
+                customerImage = docker.build("${customermicroservice}", "--pull --file server/customer/Dockerfile server/customer")
+                // dir('server/customer') {
+                //     script {
+                //         sh 'dir'
+                //         customerImage = docker.build customermicroservice
+                //     }
+                // }
+                productImage = docker.build("${productmicroservice}", "--pull --file server/products/Dockerfile server/products")
+                // dir('server/products') {
+                //     script {
+                //         sh 'dir'
+                //         productImage = docker.build productmicroservice
+                //     }
+                // }
+                storeImage = docker.build("${storemicroservice}", "--pull --file server/store/Dockerfile server/store")
+                // dir('server/store') {
+                //     script {
+                //         sh 'dir'
+                //         storeImage = docker.build storemicroservice
+                //     }
+                // }
+                databaseImage = docker.build("${databasemicroservice}", "--pull --file server/database/Dockerfile server/database")
+                // dir('server/database') {
+                //     script {
+                //         sh 'dir'
+                //         databaseImage = docker.build databasemicroservice
+                //     }
+                // }
             }
         }
         stage('Push Images') {
