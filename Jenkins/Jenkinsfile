@@ -28,13 +28,13 @@ pipeline {
         }
         stage('client izer') {
             steps {
-                // dir('../client') {
-                script {
-                    sh 'dir'
-                    sh 'ls'
-                    sh 'npm run dev'
+                dir('client') {
+                    script {
+                        sh 'dir'
+                        sh 'ls'
+                        sh 'npm run dev'
+                    }
                 }
-                // }
             }
         }
         // stage('Build Images') {
