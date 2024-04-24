@@ -256,6 +256,8 @@ app.patch('/setItemQuantity', async (req, res) => {
 app.post('/makePayment', async (req, res) => {
   try {
     const customerId = req.body.user.user_id;
+    console.log("Customer id: "+customerId)
+    console.log("User Object"+req.body.user)
     // const customerId = '660927aa2a095a0885ad20e7';
     // req.body.customerId.toString();
     // const amount = Number(req.body.amount);
@@ -306,8 +308,9 @@ app.post('/makePayment', async (req, res) => {
 
 app.get('/getOrders', async (req, res) => {
   try {
-    // const customerId = req.user.user_id;
-    const customerId = '660927aa2a095a0885ad20e7';
+    const customerId = req.query.user.user_id;
+    // const customerId = '660927aa2a095a0885ad20e7';
+    
     // req.body.customerId.toString();
     const orders = await Store.find(
       { customerId: customerId },
@@ -326,8 +329,8 @@ app.get('/getOrders', async (req, res) => {
 
 app.get('/getOrder', async (req, res) => {
   try {
-    // const customerId = req.user.user_id;
-    const customerId = '660927aa2a095a0885ad20e7';
+    const customerId = req.query.user.user_id;
+    // const customerId = '660927aa2a095a0885ad20e7';
     // req.body.customerId.toString();
     const order_id = req.query.order_id.toString();
     const order = await Store.findOne({

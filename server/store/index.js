@@ -4,7 +4,7 @@ const cors = require('cors');
 const axios = require('axios');
 const express = require('express');
 const dotenv = require('dotenv');
-const verifyTokenMiddleware = require('../verifyToken');
+const verifyTokenMiddleware = require('./verifyToken');
 
 dotenv.config({ path: './.env' });
 
@@ -62,8 +62,9 @@ app.get('/customer', async (req, res) => {
 
 app.post('/makePayment',verifyTokenMiddleware, async (req, res) => {
   try {
+    console.log(req.user)
     await axios
-      .post(`${process.env.DB_SERVER}/makePayment`, req.user)
+      .post(`${process.env.DB_SERVER}/makePayment`, {...req.body, user: req.user})
       .then((response) => {
         // console.log(response);
         res
@@ -72,14 +73,16 @@ app.post('/makePayment',verifyTokenMiddleware, async (req, res) => {
       });
   } catch (error) {
     console.error('Error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Internal server error at store' });
   }
 });
 
 app.get('/getOrders', async (req, res) => {
   try {
     await axios
-      .get(`${process.env.DB_SERVER}/getOrders`, req.body)
+      .get(`${process.env.DB_SERVER}/getOrders`, {
+        params: { user: req.user}
+      })
       .then((response) => {
         // console.log(response);
         res
@@ -95,7 +98,9 @@ app.get('/getOrders', async (req, res) => {
 app.get('/getOrder', async (req, res) => {
   try {
     await axios
-      .get(`${process.env.DB_SERVER}/getOrder`, { params: req.query })
+      .get(`${process.env.DB_SERVER}/getOrder`, { 
+        params: {...req.query, user: req.user}
+       })
       .then((response) => {
         // console.log(response);
         res
