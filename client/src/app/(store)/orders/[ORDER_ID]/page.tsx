@@ -34,7 +34,7 @@ function OrderItems({params}:{params: {ORDER_ID: string}}) {
       }
     };
     fetchCartItems();
-  }, []);
+  }, [params.ORDER_ID]);
 
   useLayoutEffect(() => {
     setShippingPrice(cartPrice > 0 ? 4.99 : 0.0);
