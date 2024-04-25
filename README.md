@@ -19,34 +19,35 @@ cat /var/jenkins_home/secrets/initialAdminPassword
 
 open url: ```localhost:8080```
 
-if promted, click “Select Plugins to Install” 
-check the GitHub option
+If promted, click “Select Plugins to Install” 
+- Check the GitHub option
+- Uncheck Ant and Gradle option (for faster installation only) [OPTIONAL]
 
 ## Using Jenkins 
 ### 1. Adding dockerhub Credentials
 - Navigate to Jenkins server Dashboard
-- click your username
-- click credentials
-- under parent, click global
-- click add credentials
-- put username and user_id as your dockerhub_id
-- password is your dockerhub access token
+- Click your username
+- Click credentials
+- Under parent, click global
+- Click add credentials
+- Put username and user_id as your dockerhub_id
+- Password is your dockerhub access token
 ### 2. Adding Docker Pipline
 - Navigate to Jenkins server Dashboard
-- click "Manage Jenkins"
-- click "Plugins"
-- type "Docker"
-- check "Docker" and "Docker Pipeline"
-- After installing, click "move to top..." 
+- Click "Manage Jenkins"
+- Click "Plugins"
+- Type "Docker"
+- Check "Docker" and "Docker Pipeline"
+- After installing, click "Go back to the top page" (This will allow you to run, without restarting jenkins) 
 ### 3. Creating Pipeline job
 - Navigate to Jenkins server Dashboard
-- click "New Item"
-- click "Pipline" and enter a name, then click "OK"
-- check GithHub
-- paste repository url
+- Click "New Item"
+- Click "Pipline" and enter a name, then click "OK"
+- Check GithHub
+- Paste repository url
 - Under Pipeline, select " ..with SCM"
-- then select "Git"
-- then add the branches, here ```*/main```
+- Then select "Git"
+- Then add the branches, here ```*/main```
 - Click "Apply" and Click "Save"
 
 
