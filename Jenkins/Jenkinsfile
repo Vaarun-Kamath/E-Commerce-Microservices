@@ -101,11 +101,11 @@ pipeline {
             steps {
                 script{
                     echo 'Deploying Microservices'
-                    // kubernetesDeploy(
-                    //     configs: './k8s/customer-server-cluster-ip-service.yml',
-                    //     delegate: true,
-                    //     enableConfigSubstitution: true
-                    // )
+                    kubernetesDeploy(
+                        configs: './k8s/customer-server-cluster-ip-service.yml',
+                        delegate: true,
+                        enableConfigSubstitution: true
+                    )
                     // echo '1'
                     // kubernetesDeploy(
                     //     configs: './k8s/customer-server-deployment.yml',
